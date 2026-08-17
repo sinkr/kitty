@@ -1979,7 +1979,6 @@ def macos_info_plist(for_quake: str = '') -> bytes:
         CFBundleAllowMixedLocalizations=True,
         TICapsLockLanguageSwitchCapable=True,
         # User Interface and Graphics
-        CFBundleIconName=appname,
         CFBundleIconFile=f'{appname}.icns',
         NSHighResolutionCapable=True,
         NSSupportsAutomaticGraphicsSwitching=True,
@@ -2026,8 +2025,10 @@ def macos_info_plist(for_quake: str = '') -> bytes:
 
 
 def create_macos_app_icon(where: str = 'Resources') -> None:
-    for x in (f'{appname}.icns', 'Assets.car'):
-        shutil.copy(os.path.join('logo', x), os.path.join(where, x))
+    icon = f'{appname}.icns'
+    shutil.copy(os.path.join('logo', icon), os.path.join(where, icon))
+    with suppress(FileNotFoundError):
+        os.remove(os.path.join(where, 'Assets.car'))
 
 
 quake_name = f'{appname}-quick-access'
@@ -2132,7 +2133,7 @@ def package(args: Options, bundle_type: str, do_build_all: bool = True) -> None:
     shutil.copy2('logo/beam-cursor@2x.png', os.path.join(libdir, 'logo'))
     shutil.copytree('shell-integration', os.path.join(libdir, 'shell-integration'), dirs_exist_ok=True)
     shutil.copytree('fonts', os.path.join(libdir, 'fonts'), dirs_exist_ok=True)
-    allowed_extensions = frozenset('py slang glsl so'.split())
+    allowed_extensions = frozenset('py slang glsl pipeline so'.split())
 
     def src_ignore(parent: str, entries: Iterable[str]) -> List[str]:
         return [x for x in entries if '.' in x and x.rpartition('.')[2] not in allowed_extensions]
