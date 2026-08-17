@@ -2030,7 +2030,6 @@ def macos_info_plist(for_quake: str = '') -> bytes:
         CFBundleAllowMixedLocalizations=True,
         TICapsLockLanguageSwitchCapable=True,
         # User Interface and Graphics
-        CFBundleIconName=appname,
         CFBundleIconFile=f'{appname}.icns',
         NSHighResolutionCapable=True,
         NSSupportsAutomaticGraphicsSwitching=True,
@@ -2077,8 +2076,10 @@ def macos_info_plist(for_quake: str = '') -> bytes:
 
 
 def create_macos_app_icon(where: str = 'Resources') -> None:
-    for x in (f'{appname}.icns', 'Assets.car'):
-        shutil.copy(os.path.join('logo', x), os.path.join(where, x))
+    icon = f'{appname}.icns'
+    shutil.copy(os.path.join('logo', icon), os.path.join(where, icon))
+    with suppress(FileNotFoundError):
+        os.remove(os.path.join(where, 'Assets.car'))
 
 
 quake_name = f'{appname}-quick-access'
